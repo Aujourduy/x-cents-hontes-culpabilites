@@ -70,14 +70,40 @@ const App = () => {
 
   // Handler for importing answers
   const handleImportAnswers = (importedAnswers: Answer[]) => {
-    setAnswers(importedAnswers);
+    // Create a map of existing answers by question ID to prevent duplicates
+    const existingAnswersMap = new Map();
+    
+    // Group existing answers by questionId
+    answers.forEach(answer => {
+      if (!existingAnswersMap.has(answer.questionId)) {
+        existingAnswersMap.set(answer.questionId, []);
+      }
+      existingAnswersMap.get(answer.questionId).push(answer);
+    });
+    
+    // Filter out imported answers that already exist (based on questionId and text)
+    const newAnswers = importedAnswers.filter(imported => {
+      const existingForThisQuestion = existingAnswersMap.get(imported.questionId) || [];
+      return !existingForThisQuestion.some(existing => 
+        existing.text.trim() === imported.text.trim()
+      );
+    });
+    
+    // Combine existing answers with new ones
+    const combinedAnswers = [...answers, ...newAnswers];
+    
+    // Update state with combined answers
+    setAnswers(combinedAnswers);
     
     // Find the highest question ID that has been answered
-    const maxQuestionId = Math.max(...importedAnswers.map(a => a.questionId), 0);
+    const maxQuestionId = Math.max(...combinedAnswers.map(a => a.questionId), 0);
     
     // Find the index in our questions array
     const newIndex = questions.findIndex(q => q.id === maxQuestionId);
     setCurrentQuestionIndex(newIndex !== -1 ? newIndex : 0);
+    
+    console.log('ImportedAnswers:', importedAnswers);
+    console.log('Combined answers after import:', combinedAnswers);
   };
 
   // Handler for clearing all answers

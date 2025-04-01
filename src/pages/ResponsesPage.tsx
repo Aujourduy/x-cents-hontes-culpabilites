@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Question, Answer } from '../types';
@@ -86,6 +85,12 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
           title: "Import réussi",
           description: `${importedAnswers.length} réponses ont été importées`,
         });
+        
+        // Force reload of the page to show updated data
+        setTimeout(() => {
+          navigate('/');
+          setTimeout(() => navigate('/responses'), 100);
+        }, 500);
       } else {
         console.error('Failed to import CSV');
         toast({
