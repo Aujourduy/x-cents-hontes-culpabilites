@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -98,12 +97,27 @@ const App = () => {
     // Find the highest question ID that has been answered
     const maxQuestionId = Math.max(...combinedAnswers.map(a => a.questionId), 0);
     
-    // Find the index in our questions array
-    const newIndex = questions.findIndex(q => q.id === maxQuestionId);
-    setCurrentQuestionIndex(newIndex !== -1 ? newIndex : 0);
+    // Find the index of the next question to answer
+    const nextQuestionIndex = questions.findIndex(q => q.id > maxQuestionId);
+    
+    // If we found a next question, set the index to that, otherwise set to the highest answered + 1
+    if (nextQuestionIndex !== -1) {
+      setCurrentQuestionIndex(nextQuestionIndex);
+    } else {
+      // Get the index of the max question ID
+      const maxQuestionIndex = questions.findIndex(q => q.id === maxQuestionId);
+      // If it's not the last question, go to the next one
+      if (maxQuestionIndex !== -1 && maxQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(maxQuestionIndex + 1);
+      } else {
+        // Otherwise, stay at the last question
+        setCurrentQuestionIndex(questions.length - 1);
+      }
+    }
     
     console.log('ImportedAnswers:', importedAnswers);
     console.log('Combined answers after import:', combinedAnswers);
+    console.log('Next question index:', nextQuestionIndex !== -1 ? nextQuestionIndex : 'not found');
   };
 
   // Handler for clearing all answers
