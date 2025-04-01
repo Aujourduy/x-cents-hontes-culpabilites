@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,12 +62,43 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Custom theme colors
+				cream: "#FFF8E7",
+				ember: "#E25822",
+				flame: "#F5853F",
+				warmBrown: "#8B4513",
+				darkAmber: "#FF8C00",
+				// Highlight colors for feelings
+				shame: "#FF6B6B", 
+				guilt: "#4ECDC4",
+				// Period colors (age ranges)
+				period1: "#FFD166", // 0-10 years
+				period2: "#06D6A0", // 10-20 years
+				period3: "#118AB2", // 20-30 years
+				period4: "#073B4C", // 30-40 years
+				period5: "#7209B7", // 40-50 years
+				period6: "#F72585", // 50+ years
+				// Domain colors
+				domain1: "#F94144", // spirituality
+				domain2: "#F3722C", // mental/psychology
+				domain3: "#F8961E", // professional
+				domain4: "#F9C74F", // financial
+				domain5: "#90BE6D", // social
+				domain6: "#43AA8B", // family & relationships
+				domain7: "#577590", // health & physical
+			},
+			backgroundImage: {
+				'fireplace-gradient': 'linear-gradient(to bottom, #FFF8E7, #FFEBC8)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			fontFamily: {
+				serif: ['Playfair Display', 'Georgia', 'serif'],
+				sans: ['Montserrat', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +116,16 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'flickr': {
+					'0%, 100%': { opacity: '0.8' },
+					'50%': { opacity: '1' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'flickr': 'flickr 3s ease-in-out infinite',
 			}
 		}
 	},
