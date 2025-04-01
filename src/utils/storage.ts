@@ -34,10 +34,14 @@ export const exportToCSV = (answers: Answer[], questions: any[]): string => {
     const question = questions.find(q => q.id === answer.questionId);
     const questionText = question ? question.text : "Unknown question";
     
+    // Double escape quotes in both question and answer text
+    const escapedQuestionText = questionText.replace(/"/g, '""');
+    const escapedAnswerText = answer.text.replace(/"/g, '""');
+    
     return [
       answer.questionId,
-      `"${questionText.replace(/"/g, '""')}"`,
-      `"${answer.text.replace(/"/g, '""')}"`,
+      `"${escapedQuestionText}"`,
+      `"${escapedAnswerText}"`,
       answer.timestamp
     ].join(',');
   });
@@ -50,20 +54,28 @@ export const importFromCSV = (csvContent: string): Answer[] | null => {
   try {
     // Skip header row
     const rows = csvContent.split('\n').slice(1);
+    const answers: Answer[] = [];
     
-    return rows.map(row => {
-      // Handle quoted fields properly (basic implementation)
-      const match = row.match(/^(\d+),"([^"]*)","([^"]*)",(.*)$/);
-      if (!match) {
-        throw new Error(`Invalid CSV row: ${row}`);
-      }
+    for (const row of rows) {
+      if (!row.trim()) continue; // Skip empty rows
       
-      return {
-        questionId: parseInt(match[1], 10),
-        text: match[3].replace(/""/g, '"'),
-        timestamp: match[4]
-      };
-    });
+      // Handle CSV parsing more robustly with regex pattern matching
+      // This regex looks for: questionId,"question text","answer text",timestamp
+      const regex = /^(\d+),"([^"]*)","([^"]*)",(.*)$/;
+      const match = row.match(regex);
+      
+      if (match) {
+        answers.push({
+          questionId: parseInt(match[1], 10),
+          text: match[3].replace(/""/g, '"'),
+          timestamp: match[4]
+        });
+      } else {
+        console.error(`Skipping invalid CSV row: ${row}`);
+      }
+    }
+    
+    return answers.length > 0 ? answers : null;
   } catch (e) {
     console.error("Failed to parse CSV:", e);
     return null;

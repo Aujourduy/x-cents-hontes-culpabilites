@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Question, Answer } from '../types';
 import { exportToCSV, importFromCSV } from '../utils/storage';
@@ -22,6 +22,12 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
   const navigate = useNavigate();
   const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
 
+  // Log what we're receiving to debug
+  useEffect(() => {
+    console.log('ResponsesPage received answers:', answers);
+    console.log('ResponsesPage received questions:', questions);
+  }, [answers, questions]);
+
   // Group answers by question
   const answersByQuestion = questions.map(question => {
     return {
@@ -30,24 +36,37 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
     };
   }).filter(group => group.answers.length > 0);
 
+  useEffect(() => {
+    console.log('Grouped answers by question:', answersByQuestion);
+  }, [answersByQuestion]);
+
   const totalAnswers = answers.length;
 
   const handleExport = () => {
-    const csv = exportToCSV(answers, questions);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `introspection_responses_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Export réussi",
-      description: "Vos réponses ont été exportées au format CSV",
-    });
+    try {
+      const csv = exportToCSV(answers, questions);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `introspection_responses_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export réussi",
+        description: "Vos réponses ont été exportées au format CSV",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Erreur lors de l'export",
+        description: "Une erreur s'est produite lors de l'exportation",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,15 +76,18 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
+      console.log('Importing CSV content:', content.substring(0, 200) + '...');
       const importedAnswers = importFromCSV(content);
       
       if (importedAnswers) {
+        console.log('Successfully imported answers:', importedAnswers);
         onImport(importedAnswers);
         toast({
           title: "Import réussi",
           description: `${importedAnswers.length} réponses ont été importées`,
         });
       } else {
+        console.error('Failed to import CSV');
         toast({
           title: "Erreur d'import",
           description: "Le fichier CSV n'est pas valide",
@@ -106,6 +128,7 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
           <button 
             onClick={handleExport}
             className="btn-warm flex items-center space-x-2"
+            disabled={totalAnswers === 0}
           >
             <Download className="w-4 h-4" />
             <span>Exporter CSV</span>
@@ -125,6 +148,7 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
           <button 
             onClick={handleClear}
             className="btn-warm bg-destructive hover:bg-destructive/80 flex items-center space-x-2"
+            disabled={totalAnswers === 0}
           >
             <Trash2 className="w-4 h-4" />
             <span>Effacer tout</span>
@@ -165,7 +189,7 @@ const ResponsesPage: React.FC<ResponsesPageProps> = ({
                       key={index} 
                       className="p-4 bg-cream/50 rounded border border-warmBrown/10"
                     >
-                      <p className="text-warmBrown">{answer.text}</p>
+                      <p className="text-warmBrown whitespace-pre-line">{answer.text}</p>
                       <div className="text-right mt-2">
                         <small className="text-muted-foreground">
                           {new Date(answer.timestamp).toLocaleString()}

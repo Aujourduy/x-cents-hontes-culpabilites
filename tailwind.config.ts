@@ -69,24 +69,24 @@ export default {
 				flame: "#F5853F",
 				warmBrown: "#8B4513",
 				darkAmber: "#FF8C00",
-				// Highlight colors for feelings
-				shame: "#FF6B6B", 
-				guilt: "#4ECDC4",
-				// Period colors (age ranges)
-				period1: "#FFD166", // 0-10 years
-				period2: "#06D6A0", // 10-20 years
-				period3: "#118AB2", // 20-30 years
-				period4: "#073B4C", // 30-40 years
-				period5: "#7209B7", // 40-50 years
-				period6: "#F72585", // 50+ years
-				// Domain colors
-				domain1: "#F94144", // spirituality
-				domain2: "#F3722C", // mental/psychology
-				domain3: "#F8961E", // professional
-				domain4: "#F9C74F", // financial
-				domain5: "#90BE6D", // social
-				domain6: "#43AA8B", // family & relationships
-				domain7: "#577590", // health & physical
+				// Highlight colors for feelings - plus marquées
+				shame: "#FF3333", // Rouge vif
+				guilt: "#00D1B2", // Turquoise vif
+				// Period colors (age ranges) - plus marquées
+				period1: "#FFD700", // 0-10 ans - Or vif
+				period2: "#00CC66", // 10-20 ans - Vert émeraude
+				period3: "#0088FF", // 20-30 ans - Bleu ciel vif
+				period4: "#003366", // 30-40 ans - Bleu marine foncé
+				period5: "#9900CC", // 40-50 ans - Violet royal
+				period6: "#FF0066", // 50+ ans - Rose vif
+				// Domain colors - plus marquées
+				domain1: "#FF0000", // spiritualité - Rouge pur
+				domain2: "#FF6600", // mental/psychologie - Orange vif
+				domain3: "#FFCC00", // professionnel - Jaune doré
+				domain4: "#FFFF00", // financier - Jaune pur
+				domain5: "#66CC00", // social - Vert pomme
+				domain6: "#00CCCC", // familial et couple - Cyan
+				domain7: "#0066FF", // santé et physique - Bleu royal
 			},
 			backgroundImage: {
 				'fireplace-gradient': 'linear-gradient(to bottom, #FFF8E7, #FFEBC8)',

@@ -1,80 +1,49 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Answer } from '../types';
 import { generateQuestions } from '../utils/questionGenerator';
-import { loadAppState, saveAppState, clearAppState } from '../utils/storage';
 import QuestionPage from '../components/QuestionPage';
 
-const Index = () => {
-  const questions = generateQuestions();
+interface IndexProps {
+  questions: ReturnType<typeof generateQuestions>;
+  currentQuestionIndex: number;
+  setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+  answers: Answer[];
+  setAnswers: React.Dispatch<React.SetStateAction<Answer[]>>;
+  timerDuration: number;
+  setTimerDuration: React.Dispatch<React.SetStateAction<number>>;
+  onAnswerAdd: (answer: Answer) => void;
+  onAnswerEdit: (index: number, newText: string) => void;
+  onNextQuestion: () => void;
+}
+
+const Index: React.FC<IndexProps> = ({
+  questions,
+  currentQuestionIndex,
+  setCurrentQuestionIndex,
+  answers,
+  timerDuration,
+  setTimerDuration,
+  onAnswerAdd,
+  onAnswerEdit,
+  onNextQuestion
+}) => {
   const navigate = useNavigate();
-
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Answer[]>([]);
-  const [timerDuration, setTimerDuration] = useState(60);
-
-  // Load saved state on initial render
-  useEffect(() => {
-    const savedState = loadAppState();
-    if (savedState) {
-      setCurrentQuestionIndex(savedState.currentQuestionIndex);
-      setAnswers(savedState.answers);
-      setTimerDuration(savedState.timerDuration);
-    }
-  }, []);
 
   // Handler for moving to the next question
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      navigate('/completion');
-    }
+    onNextQuestion();
   };
 
   // Handler for adding a new answer
   const handleAddAnswer = (answer: Answer) => {
-    setAnswers(prev => [...prev, answer]);
+    onAnswerAdd(answer);
   };
 
   // Handler for editing an existing answer
   const handleEditAnswer = (index: number, newText: string) => {
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[index] = {
-        ...newAnswers[index],
-        text: newText,
-        timestamp: new Date().toISOString()
-      };
-      return newAnswers;
-    });
-  };
-
-  // Handler for importing answers
-  const handleImportAnswers = (importedAnswers: Answer[]) => {
-    setAnswers(importedAnswers);
-    
-    // Find the highest question ID that has been answered
-    const maxQuestionId = Math.max(...importedAnswers.map(a => a.questionId), 0);
-    
-    // Find the index in our questions array
-    const newIndex = questions.findIndex(q => q.id === maxQuestionId);
-    setCurrentQuestionIndex(newIndex !== -1 ? newIndex : 0);
-    
-    // Save the imported state
-    saveAppState({
-      currentQuestionIndex: newIndex !== -1 ? newIndex : 0,
-      answers: importedAnswers,
-      timerDuration
-    });
-  };
-
-  // Handler for clearing all answers
-  const handleClearAnswers = () => {
-    setAnswers([]);
-    setCurrentQuestionIndex(0);
-    clearAppState();
+    onAnswerEdit(index, newText);
   };
 
   return (

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Clock } from 'lucide-react';
 
 interface TimerProps {
@@ -11,21 +11,36 @@ interface TimerProps {
 
 const Timer: React.FC<TimerProps> = ({ duration, onTimeout, isPaused, onReset }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Reset timer when duration changes or when onReset is called
+  // Reset timer when duration changes
   useEffect(() => {
     setTimeLeft(duration);
-  }, [duration, onReset]);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [duration]);
 
   // Handle the countdown
   useEffect(() => {
-    if (isPaused || timeLeft <= 0) return;
+    if (isPaused || timeLeft <= 0) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
 
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         const newTime = prev - 1;
         if (newTime <= 0) {
-          clearInterval(timer);
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
           onTimeout();
           return 0;
         }
@@ -33,7 +48,12 @@ const Timer: React.FC<TimerProps> = ({ duration, onTimeout, isPaused, onReset })
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [timeLeft, isPaused, onTimeout]);
 
   // Calculate the percentage for the progress bar

@@ -74,6 +74,9 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
             className="input-warm w-full h-32"
             required
           />
+          <div className="text-xs text-muted-foreground mt-1 italic">
+            Appuyez sur <span className="font-medium">Entrée</span> pour enregistrer, <span className="font-medium">Maj+Entrée</span> pour aller à la ligne
+          </div>
         </div>
         
         <div className="flex space-x-4">
@@ -106,7 +109,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
                 key={index} 
                 className="p-4 bg-white/60 rounded-lg shadow-sm border border-warmBrown/20"
               >
-                <p className="text-warmBrown">{answer.text}</p>
+                <p className="text-warmBrown whitespace-pre-line">{answer.text}</p>
                 <div className="flex justify-between items-center mt-2">
                   <small className="text-muted-foreground">{new Date(answer.timestamp).toLocaleString()}</small>
                   <button
