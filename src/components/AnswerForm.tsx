@@ -9,6 +9,7 @@ interface AnswerFormProps {
   onNext: () => void;
   answers: Answer[];
   onEditAnswer: (index: number, newText: string) => void;
+  onInputChange?: (value: string) => void;
 }
 
 const AnswerForm: React.FC<AnswerFormProps> = ({
@@ -16,7 +17,8 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
   onSubmit,
   onNext,
   answers,
-  onEditAnswer
+  onEditAnswer,
+  onInputChange
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -47,11 +49,13 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
     }
     
     setInputValue('');
+    if (onInputChange) onInputChange('');
   };
 
   const handleEdit = (index: number, text: string) => {
     setEditIndex(index);
     setInputValue(text);
+    if (onInputChange) onInputChange(text);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -61,6 +65,12 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
     }
   };
 
+  const handleInputValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    if (onInputChange) onInputChange(newValue);
+  };
+
   return (
     <div className="mt-6">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -68,7 +78,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
           <textarea
             ref={inputRef}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={handleInputValueChange}
             onKeyDown={handleKeyDown}
             placeholder="Votre réponse ici..."
             className="input-warm w-full h-32"

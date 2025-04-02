@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Question as QuestionType, Answer } from '../types';
 import Question from './Question';
@@ -31,6 +31,7 @@ const QuestionPage: React.FC<QuestionPageProps> = ({
 }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
+  const [inputValue, setInputValue] = useState('');
   const navigate = useNavigate();
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -49,6 +50,12 @@ const QuestionPage: React.FC<QuestionPageProps> = ({
     });
   }, [currentQuestionIndex, answers, timerDuration]);
 
+  // Pause timer when there's text in the input field
+  useEffect(() => {
+    // Only pause if there's actual text
+    setIsPaused(inputValue.trim().length > 0);
+  }, [inputValue]);
+
   const handleAddAnswer = (text: string) => {
     const answer: Answer = {
       questionId: currentQuestion.id,
@@ -60,6 +67,7 @@ const QuestionPage: React.FC<QuestionPageProps> = ({
     
     // Reset timer after adding an answer
     setTimerKey(prev => prev + 1);
+    setInputValue('');
     
     toast({
       title: "Réponse enregistrée",
@@ -105,6 +113,10 @@ const QuestionPage: React.FC<QuestionPageProps> = ({
       }
     }
   }, [currentQuestionIndex, questions.length, answers, currentQuestion, navigate]);
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+  };
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
@@ -158,6 +170,7 @@ const QuestionPage: React.FC<QuestionPageProps> = ({
         onNext={handleTimeoutCompleted}
         answers={answers}
         onEditAnswer={handleEditAnswer}
+        onInputChange={handleInputChange}
       />
     </div>
   );
